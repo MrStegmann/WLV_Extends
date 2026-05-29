@@ -1,0 +1,9 @@
+# Arquitectura atómica.
+# Distribución de scripts según su función en la aplicación. El nucleo no importará nada pero servirá a todos. Será el eje central del addon.
+# Arquitectura
+# - Atoms: Contendrá la lógica principal del addon desde el que se crea todo, pero sin organización. No importa nada de otros atomos, moléculas, organismos, servicios ni UI. Solo reciben el estado global de init.lua. Todos los archivos aquí tendrán la extensión .atom.lua
+# - Molecules: Contendrá scripts que combinan átomos para realizar tareas más complejas. Son independientes entre sí pero necesitan de los átomos para funcionar. Todos los archivos aquí tendrán la extensión .molecule.lua
+# - Organisms: Contendrá scripts que combinan moléculas para formar funcionalidades completas. Los organismos pueden funcionar junto con otros organismos pero no dependen de ellos. Todos los archivos aquí tendrán la extensión .organism.lua
+# - Services: Contendrá los scripts encargados de de hacer efectiva la comunicación entre organismos. Estos scripts se encargarán de escuchar eventos, enviar mensajes y coordinar la interacción entre organismos. Todos los archivos aquí tendrán la extensión .service.lua
+# - UI: Contendrá los scripts relacionados con la interfaz de usuario, como la creación de menús, botones y otros elementos visuales. Estos scripts pueden interactuar con los organismos para mostrar información o recibir comandos del usuario. Todos los archivos aquí tendrán la extensión .ui.lua
+

@@ -1,0 +1,9 @@
+## Interface: 110005
+## Title: WLV_Extends
+## Notes: Wolverine Extends Framework es una librería para la creación de menús de forma rápida e intuitiva.
+## Author: PatrickJS
+## Version: 0.0.1
+## SavedVariables: WLV_Extends_DB
+## SavedVariablesPerCharacter: WLV_Extends_CHAR_DB
+
+WLV_Extends.xml
