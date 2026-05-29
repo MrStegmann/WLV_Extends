@@ -116,5 +116,3 @@ El framework valida automáticamente los iconos. Si usas un nombre que no existe
 - **Ejemplo**: Si pasas `"spell_fire_fireball"`, el sistema buscará `Interface\Icons\spell_fire_fireball`.
 
 ---
-
-_Desarrollado con ❤️ para la comunidad de Epsilon._
