@@ -1,0 +1,5 @@
+// Molecules/UIBuilder.molecule.lua
+
+Sección de Inputs, selectores, checkbox.
+Revisaar si devuelven datos que puedan pasarse por callback y los addon externos puedan usar y consumir.
+
