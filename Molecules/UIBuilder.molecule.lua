@@ -85,17 +85,20 @@ function WLVX:AddContainer(parent, containerId, width, height, x, y)
     local offX = x or 0
     local offY = y or 0
 
+    local paddingRight = (parent.padding and parent.padding.right) or 0
+    local paddingBottom = (parent.padding and parent.padding.bottom) or 0
+
     local w = math.max(1, res.x)
     local h = math.max(1, res.y)
 
-    -- Prevenir desbordamiento horizontal: offX + width no debe superar pW
-    if pW > 0 and (offX + w) > pW then
-        w = math.max(1, pW - offX)
+    -- Prevenir desbordamiento horizontal considerando el padding del padre
+    if pW > 0 and (offX + w) > (pW - paddingRight) then
+        w = math.max(1, pW - paddingRight - offX)
     end
 
-    -- Prevenir desbordamiento vertical: considerando anclaje TOPLEFT y desplazamiento negativo (hacia abajo)
-    if pH > 0 and (math.abs(offY) + h) > pH then
-        h = math.max(1, pH - math.abs(offY))
+    -- Prevenir desbordamiento vertical considerando el padding del padre
+    if pH > 0 and (math.abs(offY) + h) > (pH - paddingBottom) then
+        h = math.max(1, pH - paddingBottom - math.abs(offY))
     end
 
     local container = CreateFrame("Frame", containerId, parent, "BackdropTemplate")
@@ -130,18 +133,11 @@ function WLVX:AddRow(parent, rowId, width, height, callback)
     if not parent then return end
 
     local res = self:resolveDimensions(width or "100%", height or 50, parent)
-    local h = res.y
-    local pWidth = parent:GetWidth()
-    local padding = (parent.padding and (parent.padding.left + parent.padding.right)) or 20
-    local maxWidth = (pWidth > 0 and pWidth or 100) - padding
-    local w = res.x
-    if w > maxWidth then
-        w = maxWidth
-    end
+    local w, h = res.x, res.y
     -- Colocamos la fila en la posición vertical actual del padre
     local row = self:AddContainer(parent, rowId, w, h, parent.nextX or 0, parent.nextY or 0)
     -- Desplazamos el puntero vertical del padre usando el alto real (clamped) del contenedor
-    parent.nextY = (parent.nextY or 0) - row:GetHeight() - 5
+    parent.nextY = (parent.nextY or 0) - row:GetHeight()
 
     if type(callback) == "function" then
         callback(row)
@@ -166,7 +162,7 @@ function WLVX:AddColumn(parent, colId, width, height, callback)
     local col = self:AddContainer(parent, colId, w, h, parent.nextX or 0, parent.nextY or 0)
 
     -- Desplazamos el puntero horizontal del padre usando el ancho real (clamped) del contenedor
-    parent.nextX = (parent.nextX or 0) + col:GetWidth() + 5
+    parent.nextX = (parent.nextX or 0) + col:GetWidth()
 
     if type(callback) == "function" then
         callback(col)
