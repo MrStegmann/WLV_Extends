@@ -28,8 +28,8 @@ function WLVX:getResponsiveValues(valPctW, valPctH, parentFrame)
     -- Si no se proporciona parentFrame, usamos UIParent como referencia del viewport
     local ref = parentFrame or UIParent
     
-    local totalW = ref:GetWidth() or 0
-    local totalH = ref:GetHeight() or 0
+    local totalW = (ref.size and ref.size.width) or ref:GetWidth() or 0
+    local totalH = (ref.size and ref.size.height) or ref:GetHeight() or 0
 
     return {
         x = (pctW / 100) * totalW,
@@ -44,8 +44,8 @@ end
 ---@return table {x, y} Valores finales en unidades de WoW.
 function WLVX:resolveDimensions(w, h, parentFrame)
     local ref = parentFrame or UIParent
-    local totalW = ref:GetWidth() or 0
-    local totalH = ref:GetHeight() or 0
+    local totalW = (ref.size and ref.size.width) or ref:GetWidth() or 0
+    local totalH = (ref.size and ref.size.height) or ref:GetHeight() or 0
     
     local function process(val, total, label)
         -- Si es un número, devolvemos el valor directo (píxeles)

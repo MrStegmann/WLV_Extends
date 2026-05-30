@@ -5,6 +5,26 @@ local addonName, WLVX = ...
 -- Funciones de construcción rápida mediante frameId.
 -- ========================================================
 
+--- Calcula la siguiente posición disponible para un elemento y actualiza los punteros del padre.
+---@param parent table El objeto frame padre.
+---@param w number Ancho del elemento.
+---@param h number Alto del elemento.
+---@param margin number|nil Espaciado opcional.
+---@return number x, number y
+function WLVX:GetNextOffset(parent, w, h, margin)
+    margin = margin or 10
+    local posX = parent.nextX or 0
+    local posY = parent.nextY or 0
+
+    if parent.isHorizontal then
+        parent.nextX = posX + w + margin
+        return posX, 0
+    else
+        parent.nextY = posY - h - margin
+        return 10, posY
+    end
+end
+
 --- Crea un botón en el frame indicado.
 ---@param parent table El objeto frame padre.
 ---@param text string El texto que se mostrará en el botón.
@@ -18,8 +38,10 @@ function WLVX:AddButton(parent, text, width, height, onClick, callback)
     local res = self:resolveDimensions(width or 250, height or 35, parent)
     local btn = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
     btn:SetSize(res.x, res.y)
-    local currentY = parent.nextY or 0
-    btn:SetPoint("TOP", 0, currentY)
+    btn.size = { width = res.x, height = res.y }
+
+    local x, y = self:GetNextOffset(parent, res.x, res.y, 10)
+    btn:SetPoint("TOPLEFT", parent, "TOPLEFT", x, y)
     btn:SetText(text)
 
     btn:SetScript("OnClick", function()
@@ -28,7 +50,6 @@ function WLVX:AddButton(parent, text, width, height, onClick, callback)
         end
     end)
 
-    parent.nextY = currentY - res.y - 10
     table.insert(parent.buttons, btn)
 
     if type(callback) == "function" then
@@ -51,8 +72,10 @@ function WLVX:AddIconButton(parent, iconName, w, h, onClick, callback)
     local res = self:resolveDimensions(w or 32, h or 32, parent)
     local btn = CreateFrame("Button", nil, parent)
     btn:SetSize(res.x, res.y)
-    local currentY = parent.nextY or 0
-    btn:SetPoint("TOP", 0, currentY)
+    btn.size = { width = res.x, height = res.y }
+
+    local x, y = self:GetNextOffset(parent, res.x, res.y, 10)
+    btn:SetPoint("TOPLEFT", parent, "TOPLEFT", x, y)
 
     local iconTex = btn:CreateTexture(nil, "ARTWORK")
     iconTex:SetTexture(WLVX:setPathForIconName(iconName))
@@ -71,7 +94,6 @@ function WLVX:AddIconButton(parent, iconName, w, h, onClick, callback)
         callback(btn)
     end
 
-    parent.nextY = currentY - res.y - 10
     return btn
 end
 
@@ -119,6 +141,7 @@ function WLVX:AddContainer(parent, containerId, width, height, x, y)
 
     local container = CreateFrame("Frame", containerId, parent, "BackdropTemplate")
     container:SetSize(w, h)
+    container.size = { width = w, height = h }
     container:SetPoint("TOPLEFT", parent, "TOPLEFT", offX, offY)
 
     -- Establecemos un fondo base transparente para permitir que SetBackgroundColor funcione
@@ -150,10 +173,10 @@ function WLVX:AddRow(parent, rowId, width, height, callback)
 
     local res = self:resolveDimensions(width or "100%", height or 50, parent)
     local w, h = res.x, res.y
+    local x, y = self:GetNextOffset(parent, w, h, 5)
     -- Colocamos la fila en la posición vertical actual del padre
-    local row = self:AddContainer(parent, rowId, w, h, parent.nextX or 0, parent.nextY or 0)
-    -- Desplazamos el puntero vertical del padre usando el alto real (clamped) del contenedor
-    parent.nextY = (parent.nextY or 0) - row:GetHeight()
+    local row = self:AddContainer(parent, rowId, w, h, x, y)
+    row.isHorizontal = true
 
     if type(callback) == "function" then
         callback(row)
@@ -173,12 +196,11 @@ function WLVX:AddColumn(parent, colId, width, height, callback)
     local res = self:resolveDimensions(width or 100, height or "100%", parent)
     local w = res.x
     local h = res.y
+    local x, y = self:GetNextOffset(parent, w, h, 5)
 
     -- Colocamos la columna según el puntero horizontal del padre
-    local col = self:AddContainer(parent, colId, w, h, parent.nextX or 0, parent.nextY or 0)
-
-    -- Desplazamos el puntero horizontal del padre usando el ancho real (clamped) del contenedor
-    parent.nextX = (parent.nextX or 0) + col:GetWidth()
+    local col = self:AddContainer(parent, colId, w, h, x, y)
+    col.isHorizontal = false
 
     if type(callback) == "function" then
         callback(col)
@@ -194,12 +216,12 @@ function WLVX:AddHeader(parent, text, width, height)
 
     local res = self:resolveDimensions(width or "100%", height or 30, parent)
     local header = parent:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    header:SetPoint("TOP", 0, parent.nextY - 10)
+    local x, y = self:GetNextOffset(parent, res.x, res.y, 15)
+    header:SetPoint("TOPLEFT", parent, "TOPLEFT", x, y)
     header:SetText(text)
     header:SetTextColor(1, 0.82, 0) -- Color dorado clásico de WoW
     header:SetSize(res.x, res.y)
 
-    parent.nextY = parent.nextY - res.y - 15
     return header
 end
 
@@ -209,11 +231,10 @@ function WLVX:AddLabel(parent, text, width, height)
     if not parent then return end
     local res = self:resolveDimensions(width or "100%", height or 20, parent)
     local label = parent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    label:SetPoint("TOP", 0, parent.nextY)
+    local x, y = self:GetNextOffset(parent, res.x, res.y, 10)
+    label:SetPoint("TOPLEFT", parent, "TOPLEFT", x, y)
     label:SetText(text)
     label:SetSize(res.x, res.y)
-
-    parent.nextY = parent.nextY - res.y - 10
 
     return label
 end
@@ -226,7 +247,13 @@ function WLVX:AddCheckbox(parent, text, defaultValue, width, height, callback)
     local res = self:resolveDimensions(width or 32, height or 32, parent)
     local check = CreateFrame("CheckButton", nil, parent, "UICheckButtonTemplate")
     check:SetSize(res.x, res.y)
-    check:SetPoint("TOPLEFT", parent, "TOPLEFT", 50, parent.nextY)
+    check.size = { width = res.x, height = res.y }
+    local x, y = self:GetNextOffset(parent, res.x, res.y, 100)
+    if parent.isHorizontal then
+        check:SetPoint("TOPLEFT", parent, "TOPLEFT", x, y)
+    else
+        check:SetPoint("TOPLEFT", parent, "TOPLEFT", 50, y)
+    end
     check:SetChecked(defaultValue)
 
     check.text = check:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -237,7 +264,6 @@ function WLVX:AddCheckbox(parent, text, defaultValue, width, height, callback)
         if callback then callback(self:GetChecked()) end
     end)
 
-    parent.nextY = parent.nextY - res.y - 5
     return check
 end
 
@@ -250,7 +276,13 @@ function WLVX:AddSlider(parent, text, minVal, maxVal, step, defaultValue, width,
     local sliderName = "WLV_Slider_" .. (text:gsub("%s+", ""))
     local slider = CreateFrame("Slider", sliderName, parent, "OptionsSliderTemplate")
     slider:SetSize(res.x, res.y)
-    slider:SetPoint("TOP", 0, parent.nextY - 20)
+    slider.size = { width = res.x, height = res.y }
+    local x, y = self:GetNextOffset(parent, res.x, res.y, parent.isHorizontal and 20 or 30)
+    if parent.isHorizontal then
+        slider:SetPoint("TOPLEFT", parent, "TOPLEFT", x, -10)
+    else
+        slider:SetPoint("TOPLEFT", parent, "TOPLEFT", 20, y - 20)
+    end
     slider:SetMinMaxValues(minVal, maxVal)
     slider:SetValueStep(step or 1)
     slider:SetValue(defaultValue or minVal)
@@ -264,7 +296,6 @@ function WLVX:AddSlider(parent, text, minVal, maxVal, step, defaultValue, width,
         if callback then callback(value) end
     end)
 
-    parent.nextY = parent.nextY - res.y - 30
     return slider
 end
 
@@ -275,12 +306,19 @@ function WLVX:AddEditBox(parent, labelText, defaultValue, width, height, callbac
 
     local res = self:resolveDimensions(width or 200, height or 20, parent)
     local label = parent:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    label:SetPoint("TOPLEFT", parent, "TOPLEFT", 30, parent.nextY)
     label:SetText(labelText)
 
     local eb = CreateFrame("EditBox", nil, parent, "InputBoxTemplate")
     eb:SetSize(res.x, res.y)
-    eb:SetPoint("TOPLEFT", parent, "TOPLEFT", 35, parent.nextY - 15)
+    eb.size = { width = res.x, height = res.y }
+    local x, y = self:GetNextOffset(parent, res.x, res.y, parent.isHorizontal and 20 or 30)
+    if parent.isHorizontal then
+        label:SetPoint("TOPLEFT", parent, "TOPLEFT", x, 0)
+        eb:SetPoint("TOPLEFT", label, "BOTTOMLEFT", 5, -2)
+    else
+        label:SetPoint("TOPLEFT", parent, "TOPLEFT", 30, y)
+        eb:SetPoint("TOPLEFT", parent, "TOPLEFT", 35, y - 15)
+    end
     eb:SetAutoFocus(false)
     eb:SetText(defaultValue or "")
 
@@ -293,7 +331,6 @@ function WLVX:AddEditBox(parent, labelText, defaultValue, width, height, callbac
         self:ClearFocus()
     end)
 
-    parent.nextY = parent.nextY - res.y - 30
     return eb
 end
 
@@ -305,11 +342,19 @@ function WLVX:AddDropdown(parent, labelText, items, defaultValue, width, height,
 
     local res = self:resolveDimensions(width or 180, height or 32, parent)
     local label = parent:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    label:SetPoint("TOPLEFT", parent, "TOPLEFT", 30, parent.nextY)
     label:SetText(labelText)
 
     local dropDown = CreateFrame("Frame", "WLV_Dropdown_" .. (labelText:gsub("%s+", "")), parent, "UIDropDownMenuTemplate")
-    dropDown:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, parent.nextY - 15)
+    dropDown.size = { width = res.x, height = res.y }
+    dropDown:SetSize(res.x, res.y)
+    local x, y = self:GetNextOffset(parent, res.x, res.y, parent.isHorizontal and 20 or 25)
+    if parent.isHorizontal then
+        label:SetPoint("TOPLEFT", parent, "TOPLEFT", x, 0)
+        dropDown:SetPoint("TOPLEFT", label, "BOTTOMLEFT", -20, -2)
+    else
+        label:SetPoint("TOPLEFT", parent, "TOPLEFT", 30, y)
+        dropDown:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, y - 15)
+    end
     
     UIDropDownMenu_SetWidth(dropDown, res.x)
     -- WoW API handles height somewhat automatically for dropdowns, but we use res.y for vertical spacing
@@ -330,7 +375,6 @@ function WLVX:AddDropdown(parent, labelText, items, defaultValue, width, height,
         end
     end)
 
-    parent.nextY = parent.nextY - res.y - 25
     return dropDown
 end
 
@@ -342,7 +386,10 @@ function WLVX:AddColorPicker(parent, text, r, g, b, a, width, height, callback)
     local res = self:resolveDimensions(width or 250, height or 35, parent)
     local btn = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
     btn:SetSize(res.x, res.y)
-    btn:SetPoint("TOP", 0, parent.nextY)
+    btn.size = { width = res.x, height = res.y }
+
+    local x, y = self:GetNextOffset(parent, res.x, res.y, 10)
+    btn:SetPoint("TOPLEFT", parent, "TOPLEFT", x, y)
     btn:SetText(text)
 
     -- Indicador visual del color seleccionado
@@ -370,7 +417,6 @@ function WLVX:AddColorPicker(parent, text, r, g, b, a, width, height, callback)
         })
     end)
 
-    parent.nextY = parent.nextY - res.y - 10
     return btn
 end
 
@@ -381,12 +427,19 @@ function WLVX:AddKeybind(parent, labelText, currentKey, width, height, callback)
 
     local res = self:resolveDimensions(width or 150, height or 25, parent)
     local label = parent:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    label:SetPoint("TOPLEFT", parent, "TOPLEFT", 30, parent.nextY)
     label:SetText(labelText)
 
     local btn = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
     btn:SetSize(res.x, res.y)
-    btn:SetPoint("TOPLEFT", parent, "TOPLEFT", 35, parent.nextY - 15)
+    btn.size = { width = res.x, height = res.y }
+    local x, y = self:GetNextOffset(parent, res.x, res.y, parent.isHorizontal and 20 or 25)
+    if parent.isHorizontal then
+        label:SetPoint("TOPLEFT", parent, "TOPLEFT", x, 0)
+        btn:SetPoint("TOPLEFT", label, "BOTTOMLEFT", 5, -2)
+    else
+        label:SetPoint("TOPLEFT", parent, "TOPLEFT", 30, y)
+        btn:SetPoint("TOPLEFT", parent, "TOPLEFT", 35, y - 15)
+    end
     btn:SetText(currentKey or "Sin asignar")
 
     btn:SetScript("OnClick", function(self)
@@ -400,7 +453,6 @@ function WLVX:AddKeybind(parent, labelText, currentKey, width, height, callback)
         end)
     end)
 
-    parent.nextY = parent.nextY - res.y - 25
     return btn
 end
 

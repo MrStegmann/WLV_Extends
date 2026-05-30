@@ -19,6 +19,7 @@ function WLVX:CreateMenu(id, title, movable, width, height, alwaysVisible, callb
     end
     local frame = CreateFrame("Frame", id, UIParent, "BackdropTemplate")
     frame:SetSize(width or 400, height or 500)
+    frame.size = { width = width or 400, height = height or 500 }
     frame:SetPoint("CENTER")
     frame:SetBackdrop({
         bgFile = "Interface/Tooltips/UI-Tooltip-Background",

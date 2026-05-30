@@ -2,6 +2,9 @@
 Añadir validaciones de parámetros con salida de mensaje de error al chat.
 
 // Molecules/UIBuilder.molecule.lua
+Revisar creador de contenedores. Crear un contenedor debería realizarse sin margenes ni padding. El padding se debe ajustar a posteriori y solo debe afectar al contenedor padre y no a los hijos.
+
+
 
 Sección de Inputs, selectores, checkbox.
 Revisaar si devuelven datos que puedan pasarse por callback y los addon externos puedan usar y consumir.
@@ -12,11 +15,13 @@ Añadir validaciones de parámetros con salida de mensaje de error al chat.
 
 Añadir función para darle color a textos.
 
-AddRow y AddColumn no alinean los items internos como corresponde.
-AddRow debe colocar todos los objetos internos en una misma linea.
-AddColumn debe colocar todos los objetos internos en una misma columna.
+AddRow y AddColumn no alinean los items internos como corresponde. DONE
+AddRow debe colocar todos los objetos internos en una misma linea. DONE
+AddColumn debe colocar todos los objetos internos en una misma columna. DONE
 
+La función Align rompe la lógica de los container, apilando y superponiendo los elementos uno sobre otro.
 
+Crear una función gap para añadir espacio proporcional entre a los hijos de un contenedor.
 
 Feature
 
