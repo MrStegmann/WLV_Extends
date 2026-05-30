@@ -4,6 +4,28 @@ local addonName, WLVX = ...
 -- UI STYLER MOLECULE
 -- Funciones para personalizar la estética de los frames.
 -- ========================================================
+--- Alinea un frame o contenedor respecto a su padre basado en una etiqueta.
+---@param frame table El objeto frame a alinear.
+---@param alignTag string "Top" | "Bottom" | "Left" | "Right" | "Center"
+function WLVX:Align(frame, alignTag)
+    if not frame then return end
+
+    local parent = frame:GetParent()
+    frame:ClearAllPoints()
+
+    local tag = string.lower(alignTag)
+    if tag == "top" then
+        frame:SetPoint("TOP", parent, "TOP", 0, -5)
+    elseif tag == "bottom" then
+        frame:SetPoint("BOTTOM", parent, "BOTTOM", 0, 5)
+    elseif tag == "left" or tag == "lef" then
+        frame:SetPoint("LEFT", parent, "LEFT", 5, 0)
+    elseif tag == "right" then
+        frame:SetPoint("RIGHT", parent, "RIGHT", -5, 0)
+    elseif tag == "center" then
+        frame:SetPoint("CENTER", parent, "CENTER", 0, 0)
+    end
+end
 
 --- Cambia el color de fondo de un frame.
 ---@param frame table El objeto frame a estilizar.

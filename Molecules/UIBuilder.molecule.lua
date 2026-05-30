@@ -7,7 +7,12 @@ local addonName, WLVX = ...
 
 --- Crea un botón en el frame indicado.
 ---@param parent table El objeto frame padre.
-function WLVX:AddButton(parent, text, width, height, callback)
+---@param text string El texto que se mostrará en el botón.
+---@param width number|nil Ancho del botón (por defecto 250).
+---@param height number|nil Alto del botón (por defecto 35).
+---@param onClick function Función que se lanzará al pulsar el botón.
+---@param callback function|nil Función que se ejecutará después de crear el botón, recibiendo el botón como argumento.
+function WLVX:AddButton(parent, text, width, height, onClick, callback)
     if not parent then return end
 
     local res = self:resolveDimensions(width or 250, height or 35, parent)
@@ -18,13 +23,17 @@ function WLVX:AddButton(parent, text, width, height, callback)
     btn:SetText(text)
 
     btn:SetScript("OnClick", function()
-        if callback then
-            callback()
+        if type(onClick) == "function" then
+            onClick()
         end
     end)
 
     parent.nextY = currentY - res.y - 10
     table.insert(parent.buttons, btn)
+
+    if type(callback) == "function" then
+        callback(btn)
+    end
 
     return btn
 end
@@ -34,8 +43,9 @@ end
 ---@param iconName string Nombre del icono.
 ---@param w number|nil Ancho del botón (por defecto 32).
 ---@param h number|nil Alto del botón (por defecto 32).
----@param callback function Función que se lanzará al pulsar el botón.
-function WLVX:AddIconButton(parent, iconName, w, h, callback)
+---@param onClick function Función que se lanzará al pulsar el botón.
+---@param callback function Función que se ejecutará después de crear el botón.
+function WLVX:AddIconButton(parent, iconName, w, h, onClick, callback)
     if not parent then return end
 
     local res = self:resolveDimensions(w or 32, h or 32, parent)
@@ -52,8 +62,14 @@ function WLVX:AddIconButton(parent, iconName, w, h, callback)
     btn:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
 
     btn:SetScript("OnClick", function()
-        if callback then callback() end
+        if type(onClick) == "function" then
+            onClick()
+        end
     end)
+
+    if type(callback) == "function" then
+        callback(btn)
+    end
 
     parent.nextY = currentY - res.y - 10
     return btn
@@ -64,7 +80,7 @@ function WLVX:AddButtons(buttonList)
     
     for _, btnData in ipairs(buttonList) do
         if btnData.menu and btnData.text then
-            self:AddButton(btnData.menu, btnData.text, btnData.callback)
+            self:AddButton(btnData.menu, btnData.text, btnData.width, btnData.height, btnData.onClick, btnData.callback)
         end
     end
 end
@@ -169,29 +185,6 @@ function WLVX:AddColumn(parent, colId, width, height, callback)
     end
 
     return col
-end
-
---- Alinea un frame o contenedor respecto a su padre basado en una etiqueta.
----@param frame table El objeto frame a alinear.
----@param alignTag string "Top" | "Bottom" | "Left" | "Right" | "Center"
-function WLVX:AlignTo(frame, alignTag)
-    if not frame then return end
-
-    local parent = frame:GetParent()
-    frame:ClearAllPoints()
-
-    local tag = string.lower(alignTag)
-    if tag == "top" then
-        frame:SetPoint("TOP", parent, "TOP", 0, -5)
-    elseif tag == "bottom" then
-        frame:SetPoint("BOTTOM", parent, "BOTTOM", 0, 5)
-    elseif tag == "left" or tag == "lef" then
-        frame:SetPoint("LEFT", parent, "LEFT", 5, 0)
-    elseif tag == "right" then
-        frame:SetPoint("RIGHT", parent, "RIGHT", -5, 0)
-    elseif tag == "center" then
-        frame:SetPoint("CENTER", parent, "CENTER", 0, 0)
-    end
 end
 
 --- Crea un encabezado (texto resaltado) en el frame indicado.
