@@ -1,5 +1,9 @@
 local addonName, WLVX = ...
 
+function WLVX:GetVersion()
+    return "0.0.1"
+end
+
 --- Traduce valores porcentuales en coordenadas de píxeles basadas en un frame padre o el viewport global.
 ---@param valPctW string Porcentaje del ancho (ej: "50%").
 ---@param valPctH string Porcentaje del alto (ej: "20%").
@@ -67,4 +71,21 @@ function WLVX:resolveDimensions(w, h, parentFrame)
         x = finalX,
         y = finalY
     }
+end
+
+--- Crea un tooltip personalizado para un botón o frame específico.
+---@param frame table El frame al que se le asignará el tooltip.
+---@param title string Título del tooltip.
+---@param lines table Una lista de líneas, donde cada línea es una tabla con 'text' y opcionalmente 'r', 'g', 'b' para el color. 
+function WLVX:CreateTooltip(frame, title, lines)
+    frame:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+        GameTooltip:SetText(title)
+        for _, line in ipairs(lines) do
+            GameTooltip:AddLine(line.text, line.r or 1, line.g or 1, line.b or 1)
+        end
+        GameTooltip:Show()
+    end)
+
+    frame:SetScript("OnLeave", function() GameTooltip:Hide() end)
 end

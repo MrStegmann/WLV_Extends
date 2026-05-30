@@ -1,5 +1,18 @@
+// Atoms/*
+Añadir validaciones de parámetros con salida de mensaje de error al chat.
+
 // Molecules/UIBuilder.molecule.lua
 
 Sección de Inputs, selectores, checkbox.
 Revisaar si devuelven datos que puedan pasarse por callback y los addon externos puedan usar y consumir.
+Añadir validaciones de parámetros con salida de mensaje de error al chat.
 
+
+// Molecules/UIStyler.molecule.lua
+
+Añadir función para darle color a textos.
+
+
+Feature
+
+Crear archivos para manejo de errores de forma centralizada

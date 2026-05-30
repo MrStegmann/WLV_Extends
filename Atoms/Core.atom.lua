@@ -295,18 +295,4 @@ function WLVX:CreateMinimapButton(iconName, frameId, callback)
     return button
 end
 
-
-function WLVX:CreateMinimapButtonTooltip(button, title, lines)
-    button:SetScript("OnEnter", function(self)
-        GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-        GameTooltip:SetText(title)
-        for _, line in ipairs(lines) do
-            GameTooltip:AddLine(line.text, line.r or 1, line.g or 1, line.b or 1)
-        end
-        GameTooltip:Show()
-    end)
-
-    button:SetScript("OnLeave", function() GameTooltip:Hide() end)
-end
-
 print("|cff00ff00[WLV_Atoms]|r cargado correctamente.")
