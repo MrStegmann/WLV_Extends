@@ -12,6 +12,11 @@ Añadir validaciones de parámetros con salida de mensaje de error al chat.
 
 Añadir función para darle color a textos.
 
+AddRow y AddColumn no alinean los items internos como corresponde.
+AddRow debe colocar todos los objetos internos en una misma linea.
+AddColumn debe colocar todos los objetos internos en una misma columna.
+
+
 
 Feature
 
