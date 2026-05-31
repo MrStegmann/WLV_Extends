@@ -1,5 +1,7 @@
 local addonName, WLVX = ...
 
+local errorHandler = WLVX.errorsHandler
+local enums = WLVX.errorsHandler.Core.Enums
 -- =========================
 -- FRAME PRINCIPAL
 -- =========================
@@ -10,13 +12,16 @@ local addonName, WLVX = ...
 ---@param height number|nil (Opcional) Alto del frame (por defecto 500).
 ---@param callback function|nil (Opcional) Función que recibe el frame para inicializar su estructura.
 ---@param alwaysVisible boolean|nil (Opcional) Si es true, el menu siempre estará visible y no se podrá cerrar.
----@param callback function|nil (Opcional) Función que recibe el frame para inicializar su estructura.
+---@param callback function|nil (Opcional) Función que recibe el frame para inicializar su construcción.
 ---@return table frame El objeto Frame de WoW creado y configurado.
-function WLVX:CreateMenu(id, title, movable, width, height, alwaysVisible, callback )
+function WLVX:CreateMenu(id, title, movable, width, height, alwaysVisible, callback)
+    print("WLVX: Intentando crear menú con ID:", id)
     if self.frames[id] then
-        print("|cffff0000[WLVX]|r El menu con ID '" .. id .. "' ya existe.")
+        print("WLVX: Error al crear menú. ID ya existe:", id)
+        errorHandler:HandleError(enums.DuplicatedID, id)
         return
     end
+    print("WLVX: Creando menú con ID:", id)
     local frame = CreateFrame("Frame", id, UIParent, "BackdropTemplate")
     frame:SetSize(width or 400, height or 500)
     frame.size = { width = width or 400, height = height or 500 }
@@ -39,20 +44,20 @@ function WLVX:CreateMenu(id, title, movable, width, height, alwaysVisible, callb
     frame:EnableMouse(movable)
     frame:SetMovable(movable)
     frame:RegisterForDrag("LeftButton")
-
+    print("WLVX: Configuración de arrastre establecida para el menú con ID:", id)
     frame:SetScript("OnDragStart", function(self)
         if self:IsMovable() then
             self:StartMoving()
         end
     end)
-
+    print("WLVX: Script OnDragStart asignado para el menú con ID:", id)
     frame:SetScript("OnDragStop", function(self)
         if self:IsMovable() then
             self:StopMovingOrSizing()
             WLVX:SaveMenuPosition(self)
         end
     end)
-
+    print("WLVX: Script OnDragStop asignado para el menú con ID:", id)
     frame.alwaysVisible = alwaysVisible
 
     local titleText = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
@@ -90,7 +95,7 @@ function WLVX:CreateMenu(id, title, movable, width, height, alwaysVisible, callb
         closeBtn:SetScript("OnClick", function() frame:Hide() end)
     end
 
-    frame.buttons = {}
+    frame.childrens = {}
 
     self.frames[id] = frame
 
@@ -108,12 +113,53 @@ function WLVX:CreateMenu(id, title, movable, width, height, alwaysVisible, callb
 end
 
 -- =========================
+-- Childs Fnc
+-- =========================
+
+function WLVX:GetChild(frame, childId)
+    if not frame.childrens then return nil end
+
+    for _, child in ipairs(frame.childrens) do
+        if child:GetName() == childId then
+            return child
+        end
+    end
+
+    return nil
+end
+
+function WLVX:AddChild(frame, child)
+    if not frame.childrens then
+        frame.childrens = {}
+    end
+
+    table.insert(frame.childrens, child)
+
+    -- Si el frame padre es oculto, ocultar también el hijo
+    if not frame:IsShown() then
+        child:Hide()
+    end
+end
+
+function WLVX:RemoveChild(frame, child)
+    if not frame.childrens then return end
+
+    for i, c in ipairs(frame.childrens) do
+        if c == child then
+            table.remove(frame.childrens, i)
+            break
+        end
+    end
+end
+
+
+-- =========================
 -- GETTERS
 -- =========================
 
 function WLVX:GetMenu(id)
     if not self.frames[id] then
-        print("|cffff0000[WLV]|r Menu no encontrado:", id)
+        errorHandler:HandleError(enums.MenuNotFound, id)
         return nil
     end
 
@@ -144,7 +190,7 @@ function WLVX:ToggleMenu(id)
     local frame = self.frames[id]
 
     if not frame then
-        print("|cffff0000[WLV]|r Menu no encontrado:", id)
+        errorHandler:HandleError(enums.MenuNotFound, id)
         return
     end
 
@@ -197,7 +243,10 @@ end
 ---@param frameId string ID del menú que debe abrir/cerrar.
 ---@param callback function|nil Función que recibe el botón creado para inicializarlo.
 function WLVX:CreateMinimapButton(iconName, frameId, callback)
-    if not frameId then return print("|cffff0000[WLVX]|r ID del menú no proporcionado para el botón de minimapa.") end
+    if not frameId then
+        errorHandler:HandleError(enums.FrameIDNotProvided)
+        return
+    end
     local name = "WLVX_MinimapButton" .. frameId
     local button = CreateFrame("Button", name, Minimap)
 
@@ -251,7 +300,7 @@ function WLVX:CreateMinimapButton(iconName, frameId, callback)
     if IsLoggedIn() then
         LoadPosition(button)
     else
-         button:RegisterEvent("PLAYER_LOGIN")
+        button:RegisterEvent("PLAYER_LOGIN")
         button:RegisterEvent("PLAYER_LOGIN")
         button:SetScript("OnEvent", function(self)
             LoadPosition(self)

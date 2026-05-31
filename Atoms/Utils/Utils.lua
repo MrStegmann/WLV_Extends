@@ -1,4 +1,7 @@
 local addonName, WLVX = ...
+local errorHandler = WLVX.errorsHandler
+local enums = WLVX.errorsHandler.Utils.Enums
+
 
 function WLVX:GetVersion()
     return "0.0.1"
@@ -12,12 +15,12 @@ end
 function WLVX:getResponsiveValues(valPctW, valPctH, parentFrame)
     local function validateAndParse(val, label)
         if type(val) ~= "string" then
-            error("WLVX:getResponsiveValues: El parámetro " .. label .. " debe ser un String.")
+            errorHandler:HandleError(enums.StringError, label)
         end
         -- Patrón: Uno o más dígitos (opcionalmente con decimales) seguidos de un símbolo de %
         local numStr = val:match("^(%d+%.?%d*)%%$")
         if not numStr then
-            error("WLVX:getResponsiveValues: " .. label .. " ('" .. val .. "') debe ser un valor numérico seguido de '%'.")
+            errorHandler:HandleError(enums.PercentageFormatError, label, val)
         end
         return tonumber(numStr)
     end
@@ -57,10 +60,10 @@ function WLVX:resolveDimensions(w, h, parentFrame)
             if numStr then
                 return (tonumber(numStr) / 100) * total
             else
-                error("WLVX:resolveDimensions: El formato de '" .. label .. "' (" .. val .. ") es inválido. Use números o 'n%'.")
+                errorHandler:HandleError(enums.PercentageFormatError, label, val)
             end
         else
-            error("WLVX:resolveDimensions: El parámetro '" .. label .. "' debe ser un número o un string con '%'.")
+            errorHandler:HandleError(enums.StringError, label)
         end
     end
 
@@ -73,19 +76,3 @@ function WLVX:resolveDimensions(w, h, parentFrame)
     }
 end
 
---- Crea un tooltip personalizado para un botón o frame específico.
----@param frame table El frame al que se le asignará el tooltip.
----@param title string Título del tooltip.
----@param lines table Una lista de líneas, donde cada línea es una tabla con 'text' y opcionalmente 'r', 'g', 'b' para el color. 
-function WLVX:CreateTooltip(frame, title, lines)
-    frame:SetScript("OnEnter", function(self)
-        GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-        GameTooltip:SetText(title)
-        for _, line in ipairs(lines) do
-            GameTooltip:AddLine(line.text, line.r or 1, line.g or 1, line.b or 1)
-        end
-        GameTooltip:Show()
-    end)
-
-    frame:SetScript("OnLeave", function() GameTooltip:Hide() end)
-end

@@ -3,6 +3,7 @@ local addonName, WLVX = ...
 _G["WLV_Extends"] = WLVX
 
 WLVX.frames = {}
+WLVX.errorsHandler = {}
 WLVX.commands = {}
 
 -- =========================
