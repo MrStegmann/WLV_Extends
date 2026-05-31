@@ -4,24 +4,28 @@ local addonName, WLVX = ...
 ---@param parent table El objeto frame padre.
 ---@param w number Ancho del elemento.
 ---@param h number Alto del elemento.
----@param margin number|nil Espaciado opcional.
 ---@return number x, number y
-function WLVX:GetNextOffset(parent, w, h, margin)
-    margin = margin or 10
-    local posX = parent.nextX or 0
-    local posY = parent.nextY or 0
+function WLVX:GetNextOffset(parent, w, h)
+    local styles = parent.styles or {}
+    local m = styles.margin or { top = 0, left = 0, right = 0, bottom = 0 }
+    local gap = styles.gap or 0 -- Obtener el valor del gap
 
-    if parent.isHorizontal then
-        parent.nextX = posX + w + margin
-        return posX, 0
-    else
-        parent.nextY = posY - h - margin
-        return 10, posY
+    local offsetX = m.left or 0
+    local offsetY = -(m.top or 0)
+
+    -- Calculamos el offset sumando el tamaño de los hijos existentes más el margen definido en el padre
+    if parent.childrens then
+        for _, child in pairs(parent.childrens) do
+            if parent.isHorizontal then
+                offsetX = offsetX + (child.size and child.size.width or child:GetWidth()) + gap
+            else
+                offsetY = offsetY - (child.size and child.size.height or child:GetHeight()) - gap
+            end
+        end
     end
+
+    return offsetX, offsetY
 end
-
-
-
 
 --- Crea un tooltip personalizado para un botón o frame específico.
 ---@param frame table El frame al que se le asignará el tooltip.

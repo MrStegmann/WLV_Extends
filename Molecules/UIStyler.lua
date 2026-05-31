@@ -175,60 +175,33 @@ end
 
 --- Define los márgenes (espacio exterior) de un frame.
 ---@param frame table El objeto frame.
----@param p1 number|nil 1 parám: todos. 2 paráms: X. 4 paráms: Arriba.
----@param p2 number|nil 2 paráms: Y. 4 paráms: Izquierda.
----@param p3 number|nil 4 paráms: Abajo.
----@param p4 number|nil 4 paráms: Derecha.
-function WLVX:SetMargin(frame, p1, p2, p3, p4)
+---@param top number|nil Margen superior.
+---@param left number|nil Margen izquierdo.
+---@param bottom number|nil Margen inferior.
+---@param right number|nil Margen derecho.
+function WLVX:SetMargin(frame, top, left, bottom, right)
     if not frame then return end
     local m = {}
-    if p1 ~= nil and p2 ~= nil and p3 ~= nil and p4 ~= nil then
-        m.top, m.left, m.bottom, m.right = p1, p2, p3, p4
-    elseif p1 ~= nil and p2 ~= nil and p3 ~= nil then
+    if top ~= nil and left ~= nil and bottom ~= nil and right ~= nil then
+        m.top, m.left, m.bottom, m.right = top, left, bottom, right
+    elseif top ~= nil and left ~= nil and bottom ~= nil then
         error("WLVX:SetMargin recibió 3 parámetros. Se requieren 1, 2 o 4.")
-    elseif p1 ~= nil and p2 ~= nil then
-        m.left, m.right, m.top, m.bottom = p1, p1, p2, p2
-    elseif p1 ~= nil then
-        m.top, m.left, m.bottom, m.right = p1, p1, p1, p1
+    elseif top ~= nil and left ~= nil then
+        m.top, m.bottom, m.left, m.right = top, top, left, left
+    elseif top ~= nil then
+        m.top, m.left, m.bottom, m.right = top, top, top, top
     end
-    frame.margin = m
-
-    -- Aplicar el margen inmediatamente ajustando la posición actual
-    local point, relativeTo, relativePoint, xOfs, yOfs = frame:GetPoint()
-    if point then
-        frame:SetPoint(point, relativeTo, relativePoint, xOfs + (m.left or 0), yOfs - (m.top or 0))
-    end
-
-    -- Notificar al padre para que el siguiente elemento apilado respete este espacio
-    local parent = frame:GetParent()
-    if parent and parent.nextY ~= nil then
-        parent.nextY = parent.nextY - (m.top or 0) - (m.bottom or 0)
-    end
+    frame.styles.margin = m
 end
 
---- Define el padding (espacio interior) de un frame.
+--- Define el espacio entre los hijos de un frame.
+--- Este espacio se aplica uniformemente entre los elementos hijos, no entre los hijos y los bordes del padre.
 ---@param frame table El objeto frame.
----@param p1 number|nil 1 parám: todos. 2 paráms: X. 4 paráms: Arriba.
----@param p2 number|nil 2 paráms: Y. 4 paráms: Izquierda.
----@param p3 number|nil 4 paráms: Abajo.
----@param p4 number|nil 4 paráms: Derecha.
-function WLVX:SetPadding(frame, p1, p2, p3, p4)
+---@param value number El valor del espacio (gap).
+function WLVX:SetGap(frame, value)
     if not frame then return end
-    local p = {}
-    if p1 ~= nil and p2 ~= nil and p3 ~= nil and p4 ~= nil then
-        p.top, p.left, p.bottom, p.right = p1, p2, p3, p4
-    elseif p1 ~= nil and p2 ~= nil and p3 ~= nil then
-        error("WLVX:SetPadding recibió 3 parámetros. Se requieren 1, 2 o 4.")
-    elseif p1 ~= nil and p2 ~= nil then
-        p.left, p.right, p.top, p.bottom = p1, p1, p2, p2
-    elseif p1 ~= nil then
-        p.top, p.left, p.bottom, p.right = p1, p1, p1, p1
-    end
-    frame.padding = p
-
-    -- El padding ajusta el punto de inicio para los elementos que se añadan después
-    frame.nextX = (frame.nextX or 0) + (p.left or 0)
-    frame.nextY = (frame.nextY or 0) - (p.top or 0)
+    frame.styles = frame.styles or {}
+    frame.styles.gap = value or 0
 end
 
 print("|cff00ff00[WLV_Molecule]|r UIStyler cargado correctamente.")

@@ -23,7 +23,7 @@ Crea la ventana principal.
 
 ### `WLVX:CreateMinimapButton`
 
-Crea un botón persistente y arrastrable en el minimapa.
+Crea un botón persistente, arrastrable y con guardado de posición en el minimapa.
 
 - **Parámetros**: `iconName`, `frameId`, `callback`.
 
@@ -33,47 +33,68 @@ Crea un botón persistente y arrastrable en el minimapa.
 
 Todas las funciones de construcción reciben como primer parámetro el **parent** (el frame o contenedor donde se alojarán).
 
-### Estructura
+### Estructura y Layout
 
-| Función       | Descripción                                                             |
-| :------------ | :---------------------------------------------------------------------- |
-| `AddRowTo`    | Crea una fila horizontal. Gestiona el espacio vertical automáticamente. |
-| `AddColumnTo` | Crea una columna dentro de una fila. Gestiona el espacio horizontal.    |
-| `AlignTo`     | Alinea un frame a: "Top", "Bottom", "Left", "Right" o "Center".         |
+| Función        | Descripción                                                             |
+| :------------- | :---------------------------------------------------------------------- |
+| `AddRow`       | Crea una fila horizontal. Gestiona el espacio vertical automáticamente. |
+| `AddColumn`    | Crea una columna dentro de una fila. Gestiona el espacio horizontal.    |
+| `AddContainer` | Crea un contenedor genérico con soporte para desbordamiento.            |
+| `Align`        | Alinea un frame a: "Top", "Bottom", "Left", "Right" o "Center".         |
+
+### Estilo y Espaciado
+
+| Función              | Descripción                                                                  |
+| :------------------- | :--------------------------------------------------------------------------- |
+| `SetMargin`          | Define el margen interno (espacio entre el borde del padre y sus hijos).     |
+| `SetGap`             | Define el espacio uniforme entre cada uno de los elementos hijos.            |
+| `ApplyPresetStyle`   | Aplica temas predefinidos ("Glass", "Neon", "ArcaneNeon", "CyberBlue", etc). |
+| `SetBackgroundColor` | Cambia el color de fondo del frame.                                          |
 
 ### Elementos
 
-| Función         | Descripción                                  |
-| :-------------- | :------------------------------------------- |
-| `AddHeaderTo`   | Texto grande dorado para títulos de sección. |
-| `AddButtonTo`   | Botón estándar con callback al hacer clic.   |
-| `AddLabelTo`    | Texto informativo sencillo.                  |
-| `AddCheckboxTo` | Casilla de verificación (On/Off).            |
-| `AddSliderTo`   | Barra deslizante para valores numéricos.     |
-| `AddDropdownTo` | Menú desplegable de selección.               |
+| Función          | Descripción                                  |
+| :--------------- | :------------------------------------------- |
+| `AddHeader`      | Texto grande dorado para títulos de sección. |
+| `AddButton`      | Botón estándar de la interfaz de WoW.        |
+| `AddIconButton`  | Botón circular o cuadrado basado en iconos.  |
+| `AddLabel`       | Texto informativo sencillo.                  |
+| `AddCheckbox`    | Casilla de verificación (On/Off).            |
+| `AddSlider`      | Barra deslizante para valores numéricos.     |
+| `AddEditBox`     | Campo de entrada de texto.                   |
+| `AddDropdown`    | Menú desplegable de selección múltiple.      |
+| `AddColorPicker` | Botón que abre el selector de color de WoW.  |
+| `AddKeybind`     | Selector de teclas para asignaciones.        |
 
 ---
 
 ## 📖 Ejemplo Práctico (Basado en Main.ui.lua)
 
-### 1. Crear un Menú Estándar
+### 1. Crear un Menú con Márgenes y Gaps
 
 ```lua
-WLVX:CreateMenu("MiMenu", "Título del Addon", true, 600, 400, false, function(frame)
-    -- Todo lo que escribas aquí dentro se añadirá al menú
-    WLVX:AddHeader(frame, "Sección Principal")
+local menuId = "MiMenu"
+WLVX:CreateMenu(menuId, "Mi Addon", true, 300, 200, false, function(frame)
+    WLVX:ApplyPresetStyle(frame, "ArcaneNeon")
+    WLVX:SetMargin(frame, 15) -- 15px de espacio desde los bordes
+    WLVX:SetGap(frame, 10)    -- 10px de separación entre elementos
+
+    WLVX:AddHeader(frame, "Configuración")
+    WLVX:AddButton(frame, "btn_1", "Guardar", nil, nil, function() print("Guardado") end)
 end)
 ```
 
-### 2. Crear Layout de Columnas (Panel Izquierdo y Derecho)
+### 2. Layout de Columnas y Filas
 
 Para crear una barra lateral de navegación y un área de contenido:
 
 ```lua
 WLVX:AddRow(frame, "Cuerpo", 300, 580, function(row)
+    WLVX:SetGap(row, 5)
+
     -- Columna izquierda (Navegación)
     WLVX:AddColumn(row, "Nav", 100, nil, function(col)
-        WLVX:AlignTo(col, "Left")
+        WLVX:Align(col, "Left")
         WLVX:AddButton(col, "Opciones", function() print("Click!") end)
     end)
 

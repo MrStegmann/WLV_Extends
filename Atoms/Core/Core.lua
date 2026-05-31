@@ -17,14 +17,13 @@ local enums = WLVX.errorsHandler.Core.Enums
 function WLVX:CreateMenu(id, title, movable, width, height, alwaysVisible, callback)
     print("WLVX: Intentando crear menú con ID:", id)
     if self.frames[id] then
-        print("WLVX: Error al crear menú. ID ya existe:", id)
         errorHandler:HandleError(enums.DuplicatedID, id)
         return
     end
-    print("WLVX: Creando menú con ID:", id)
     local frame = CreateFrame("Frame", id, UIParent, "BackdropTemplate")
     frame:SetSize(width or 400, height or 500)
     frame.size = { width = width or 400, height = height or 500 }
+    frame.styles = { margin = { top = 0, right = 0, bottom = 0, left = 0 } }
     frame:SetPoint("CENTER")
     frame:SetBackdrop({
         bgFile = "Interface/Tooltips/UI-Tooltip-Background",
@@ -44,35 +43,32 @@ function WLVX:CreateMenu(id, title, movable, width, height, alwaysVisible, callb
     frame:EnableMouse(movable)
     frame:SetMovable(movable)
     frame:RegisterForDrag("LeftButton")
-    print("WLVX: Configuración de arrastre establecida para el menú con ID:", id)
     frame:SetScript("OnDragStart", function(self)
         if self:IsMovable() then
             self:StartMoving()
         end
     end)
-    print("WLVX: Script OnDragStart asignado para el menú con ID:", id)
     frame:SetScript("OnDragStop", function(self)
         if self:IsMovable() then
             self:StopMovingOrSizing()
             WLVX:SaveMenuPosition(self)
         end
     end)
-    print("WLVX: Script OnDragStop asignado para el menú con ID:", id)
     frame.alwaysVisible = alwaysVisible
 
     local titleText = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
-    titleText:SetPoint("TOP", 0, -15)
+    titleText:SetPoint("TOP", 0, 0)
     
     -- Ajuste dinámico del offset inicial según la presencia de título
     if title and title ~= "" then
         titleText:SetText(title)
-        frame.nextY = -45
+        
     elseif title == "" then
         titleText:SetText("")
-        frame.nextY = -5 -- Margen mínimo si el título es explícitamente vacío
+        
     else
         titleText:SetText("WLV Menu")
-        frame.nextY = -45
+        
     end
 
     -- Intentar cargar posición guardada al inicio
@@ -97,6 +93,11 @@ function WLVX:CreateMenu(id, title, movable, width, height, alwaysVisible, callb
 
     frame.childrens = {}
 
+    frame.getChilds = WLVX.GetChilds
+    frame.getChildById = WLVX.GetChildById
+    frame.addChild = WLVX.AddChild
+    frame.removeChild = WLVX.RemoveChild
+
     self.frames[id] = frame
 
     if alwaysVisible then
@@ -108,7 +109,7 @@ function WLVX:CreateMenu(id, title, movable, width, height, alwaysVisible, callb
     if type(callback) == "function" then
         callback(frame)
     end
-    print("WLVX: Menu creado correctamente:", id)
+
     return frame
 end
 
@@ -116,11 +117,15 @@ end
 -- Childs Fnc
 -- =========================
 
-function WLVX:GetChild(frame, childId)
-    if not frame.childrens then return nil end
+function WLVX:GetChilds()
+    return self.childrens
+end
 
-    for _, child in ipairs(frame.childrens) do
-        if child:GetName() == childId then
+function WLVX:GetChildById(childId)
+    if not self.childrens then return nil end
+
+    for id, child in pairs(self.childrens) do
+        if id == childId then
             return child
         end
     end
@@ -128,25 +133,21 @@ function WLVX:GetChild(frame, childId)
     return nil
 end
 
-function WLVX:AddChild(frame, child)
-    if not frame.childrens then
-        frame.childrens = {}
-    end
+function WLVX:AddChild(childId, child)
+    if not self.childrens then self.childrens = {} end
+    self.childrens[childId] = child
 
-    table.insert(frame.childrens, child)
-
-    -- Si el frame padre es oculto, ocultar también el hijo
-    if not frame:IsShown() then
+    if not self:IsShown() then
         child:Hide()
     end
 end
 
-function WLVX:RemoveChild(frame, child)
-    if not frame.childrens then return end
+function WLVX:RemoveChild(child)
+    if not self.childrens then return end
 
-    for i, c in ipairs(frame.childrens) do
+    for childId, c in pairs(self.childrens) do
         if c == child then
-            table.remove(frame.childrens, i)
+            self.childrens[childId] = nil
             break
         end
     end

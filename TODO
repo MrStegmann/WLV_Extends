@@ -17,8 +17,8 @@
 
 - Añadir función para darle color a textos.
 - [DONE] AddRow y AddColumn no alinean los items internos como corresponde.
-- [DONE] AddRow debe colocar todos los objetos internos en una misma linea.
-- [DONE] AddColumn debe colocar todos los objetos internos en una misma columna.
+  - [DONE] AddRow debe colocar todos los objetos internos en una misma linea.
+  - [DONE] AddColumn debe colocar todos los objetos internos en una misma columna.
 - La función Align rompe la lógica de los container, apilando y superponiendo los elementos uno sobre otro.
 - Crear una función gap para añadir espacio proporcional entre a los hijos de un contenedor.
 
