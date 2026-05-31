@@ -33,7 +33,6 @@ function WLVX:AddContainer(parent, containerId, width, height, x, y)
     container.size = { width = w, height = h }
     container.styles = { margin = { top = 0, right = 0, bottom = 0, left = 0 } }
     container:SetPoint("TOPLEFT", parent, "TOPLEFT", offX, offY)
-    print("WLVX: Creando contenedor con ID:", containerId, "en posición (", offX, ",", offY, ") con tamaño (", w, "x", h, ") dentro del padre:", parent:GetName())
 
     -- Establecemos un fondo base transparente para permitir que SetBackgroundColor funcione
     container:SetBackdrop({

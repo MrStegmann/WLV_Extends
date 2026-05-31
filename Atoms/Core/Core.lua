@@ -15,7 +15,6 @@ local enums = WLVX.errorsHandler.Core.Enums
 ---@param callback function|nil (Opcional) Función que recibe el frame para inicializar su construcción.
 ---@return table frame El objeto Frame de WoW creado y configurado.
 function WLVX:CreateMenu(id, title, movable, width, height, alwaysVisible, callback)
-    print("WLVX: Intentando crear menú con ID:", id)
     if self.frames[id] then
         errorHandler:HandleError(enums.DuplicatedID, id)
         return
@@ -342,7 +341,7 @@ function WLVX:CreateMinimapButton(iconName, frameId, callback)
 
 
     WLVX.frames[name] = button
-    print("WLVX: Botón de minimapa creado correctamente:", name)
+    
     return button
 end
 
