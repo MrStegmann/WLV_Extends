@@ -2,16 +2,16 @@
 
 ## Atoms
 
-- Añadir validaciones de parámetros con salida de mensaje de error al chat.
+- [DONE] Añadir validaciones de parámetros con salida de mensaje de error al chat.
 
 ## Molecules
 
 ### UIBuilder
 
-- Revisar creador de contenedores. Crear un contenedor debería realizarse sin margenes ni padding. El padding se debe ajustar a posteriori y solo debe afectar al contenedor padre y no a los hijos.
+- [DONE] Revisar creador de contenedores. Crear un contenedor debería realizarse sin margenes ni padding. El padding se debe ajustar a posteriori y solo debe afectar al contenedor padre y no a los hijos.
 - Sección de Inputs, selectores, checkbox.
-- Revisaar si devuelven datos que puedan pasarse por callback y los addon externos puedan usar y consumir.
-- Añadir validaciones de parámetros con salida de mensaje de error al chat.
+  - Revisaar si devuelven datos que puedan pasarse por callback y los addon externos puedan usar y consumir.
+  - Añadir validaciones de parámetros con salida de mensaje de error al chat.
 
 ### UIStyler
 
@@ -19,10 +19,11 @@
 - [DONE] AddRow y AddColumn no alinean los items internos como corresponde.
   - [DONE] AddRow debe colocar todos los objetos internos en una misma linea.
   - [DONE] AddColumn debe colocar todos los objetos internos en una misma columna.
-- La función Align rompe la lógica de los container, apilando y superponiendo los elementos uno sobre otro.
-- Crear una función gap para añadir espacio proporcional entre a los hijos de un contenedor.
+- [DONE] La función Align rompe la lógica de los container, apilando y superponiendo los elementos uno sobre otro.
+  - [DONE] Se ha eliminado esta función.
+- [DONE] Crear una función gap para añadir espacio proporcional entre a los hijos de un contenedor.
 
 ## Features
 
-- Crear archivos para manejo de errores de forma centralizada
+- [DONE] Crear archivos para manejo de errores de forma centralizada
 - Crear función maestra para la creación de Tooltips "onEnter"
