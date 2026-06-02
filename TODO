@@ -10,7 +10,7 @@
 
 - [DONE] Revisar creador de contenedores. Crear un contenedor debería realizarse sin margenes ni padding. El padding se debe ajustar a posteriori y solo debe afectar al contenedor padre y no a los hijos.
 - Sección de Inputs, selectores, checkbox.
-  - Revisaar si devuelven datos que puedan pasarse por callback y los addon externos puedan usar y consumir.
+  - [DONE] Revisaar si devuelven datos que puedan pasarse por callback y los addon externos puedan usar y consumir.
   - Añadir validaciones de parámetros con salida de mensaje de error al chat.
 
 ### UIStyler
@@ -27,3 +27,4 @@
 
 - [DONE] Crear archivos para manejo de errores de forma centralizada
 - Crear función maestra para la creación de Tooltips "onEnter"
+- Crear nuevos elementos tipo Card
