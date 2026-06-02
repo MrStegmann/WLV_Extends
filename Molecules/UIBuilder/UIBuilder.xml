@@ -3,4 +3,5 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI-Classic.xsd">
 	<Include file="Utils.lua"/>
     <Include file="Containers.lua"/>
 	<Include file="Elements.lua"/>
+	<Include file="Submenus.lua"/>
 </Ui>

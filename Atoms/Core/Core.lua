@@ -5,24 +5,26 @@ local enums = WLVX.errorsHandler.Core.Enums
 -- =========================
 -- FRAME PRINCIPAL
 -- =========================
+
 --- Crea un nuevo menu (Frame) con un titulo y dimensiones especificas.
 ---@param id string Identificador unico para registrar el menu.
 ---@param title string|nil (Opcional) Texto que se mostrara en la cabecera del menu.
----@param width number|nil (Opcional) Ancho del frame (por defecto 400).
----@param height number|nil (Opcional) Alto del frame (por defecto 500).
----@param callback function|nil (Opcional) Función que recibe el frame para inicializar su estructura.
----@param alwaysVisible boolean|nil (Opcional) Si es true, el menu siempre estará visible y no se podrá cerrar.
+---@param size table|nil (Opcional) Tabla que contiene el ancho y alto del frame (por defecto { width = 400, height = 500 }).
+---@param options table|nil (Opcional) Tabla que contiene opciones adicionales para el frame. (por defecto { movable = true, alwaysVisible = false }).
 ---@param callback function|nil (Opcional) Función que recibe el frame para inicializar su construcción.
 ---@return table frame El objeto Frame de WoW creado y configurado.
-function WLVX:CreateMenu(id, title, movable, width, height, alwaysVisible, callback)
+function WLVX:CreateMenu(id, title, size, options, callback)
     if self.frames[id] then
         errorHandler:HandleError(enums.DuplicatedID, id)
         return
     end
+    print("Creating menu with ID: " .. id .. "." .. (title and (" Title: " .. title) or "") .. "." .. (size and (" Size: " .. size.width .. "x" .. size.height) or "") .. "." .. (options and (" Options: " .. (options.movable and "Movable" or "Not Movable") .. ", " .. (options.alwaysVisible and "Always Visible" or "Not Always Visible")) or ""))
+
     local frame = CreateFrame("Frame", id, UIParent, "BackdropTemplate")
-    frame:SetSize(width or 400, height or 500)
-    frame.size = { width = width or 400, height = height or 500 }
+    frame:SetSize(size.width or 400, size.height or 500)
+    frame.size = size
     frame.styles = { margin = { top = 0, right = 0, bottom = 0, left = 0 } }
+
     frame:SetPoint("CENTER")
     frame:SetBackdrop({
         bgFile = "Interface/Tooltips/UI-Tooltip-Background",
@@ -39,8 +41,8 @@ function WLVX:CreateMenu(id, title, movable, width, height, alwaysVisible, callb
     })
 
     frame:SetBackdropColor(0,0,0,0.95)
-    frame:EnableMouse(movable)
-    frame:SetMovable(movable)
+    frame:EnableMouse(options.movable)
+    frame:SetMovable(options.movable)
     frame:RegisterForDrag("LeftButton")
     frame:SetScript("OnDragStart", function(self)
         if self:IsMovable() then
@@ -53,7 +55,7 @@ function WLVX:CreateMenu(id, title, movable, width, height, alwaysVisible, callb
             WLVX:SaveMenuPosition(self)
         end
     end)
-    frame.alwaysVisible = alwaysVisible
+    frame.alwaysVisible = options.alwaysVisible
 
     local titleText = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
     titleText:SetPoint("TOP", 0, 0)
@@ -84,7 +86,7 @@ function WLVX:CreateMenu(id, title, movable, width, height, alwaysVisible, callb
         LoadPosition(frame)
     end
 
-    if not alwaysVisible then
+    if not options.alwaysVisible then
         local closeBtn = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
         closeBtn:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -2, -2)
         closeBtn:SetScript("OnClick", function() frame:Hide() end)
@@ -99,7 +101,7 @@ function WLVX:CreateMenu(id, title, movable, width, height, alwaysVisible, callb
 
     self.frames[id] = frame
 
-    if alwaysVisible then
+    if options.alwaysVisible then
         frame:Show()
     else
         frame:Hide()
