@@ -1,0 +1,14 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI-Classic.xsd">
+	<Include file="Div.lua"/>
+	<Include file="Anchor.lua"/>
+    <Include file="Button.lua"/>
+    <Include file="Container.lua"/>
+    <Include file="Hr.lua"/>
+    <Include file="Img.lua"/>
+    <Include file="Label.lua"/>
+    <Include file="Input.lua"/>
+    <Include file="List.lua"/>
+    <Include file="Select.lua"/>
+    <Include file="Text.lua"/>
+</Ui>

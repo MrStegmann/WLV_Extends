@@ -4,5 +4,6 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI-Classic.xsd">
 	<Include file="Assests\Icons.lua"/>
 	<Include file="Atoms\Atoms.xml"/>
 	<Include file="Molecules\Molecules.xml"/>
+	<Include file="Test\Components\Card.lua"/>
     <Include file="Test\Main.ui.lua"/>
 </Ui>

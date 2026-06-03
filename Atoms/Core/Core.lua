@@ -18,7 +18,8 @@ function WLVX:CreateMenu(id, title, size, options, callback)
         errorHandler:HandleError(enums.DuplicatedID, id)
         return
     end
-    print("Creating menu with ID: " .. id .. "." .. (title and (" Title: " .. title) or "") .. "." .. (size and (" Size: " .. size.width .. "x" .. size.height) or "") .. "." .. (options and (" Options: " .. (options.movable and "Movable" or "Not Movable") .. ", " .. (options.alwaysVisible and "Always Visible" or "Not Always Visible")) or ""))
+    size = size or { width = 400, height = 500 }
+    options = options or { movable = true, alwaysVisible = false }
 
     local frame = CreateFrame("Frame", id, UIParent, "BackdropTemplate")
     frame:SetSize(size.width or 400, size.height or 500)
@@ -63,7 +64,7 @@ function WLVX:CreateMenu(id, title, size, options, callback)
     -- Ajuste dinámico del offset inicial según la presencia de título
     if title and title ~= "" then
         titleText:SetText(title)
-        
+        titleText:SetPoint("TOP", 0, -10)
     elseif title == "" then
         titleText:SetText("")
         

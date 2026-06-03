@@ -47,7 +47,7 @@ function WLVX:CreateContextMenuOptions(title, options)
         table.insert(menu, item)
     end
 
-    return {proccess = true, menu = menu}
+    return {process = true, menu = menu}
 end
 
 
@@ -67,7 +67,7 @@ function WLVX:CreateContextMenu(id, frame, options)
         print("No options provided for context menu with ID: " .. id)
     end
 
-    local menuOptions = options and options.proccess and options.menu or self:CreateContextMenuOptions("Menu", options).menu
+    local menuOptions = options and options.process and options.menu or self:CreateContextMenuOptions("Menu", options).menu
 
     if not WLVX.Submenus[id] then
         WLVX.Submenus[id] = CreateFrame("Frame", id, UIParent, "UIDropDownMenuTemplate")
