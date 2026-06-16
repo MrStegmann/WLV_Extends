@@ -15,7 +15,7 @@ function WLVX:Div(parent, id, props, callback)
     local height = props.height or props.h or props.size or 40
     local res = WLVX:resolveDimensions(width, height, parent)
     local x, y = WLVX:htmlGetFlowPoint(parent, res.x, res.y, props)
-    local div = WLVX:AddContainer(parent, id, width, height, x, y)
+    local div = WLVX:AddContainer(parent, id, res.x, res.y, x, y)
 
     local direction = props.direction or props.flexDirection or props.display
     if direction == "row" or direction == "horizontal" or direction == "flex" then

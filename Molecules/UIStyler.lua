@@ -181,6 +181,7 @@ end
 ---@param right number|nil Margen derecho.
 function WLVX:SetMargin(frame, top, left, bottom, right)
     if not frame then return end
+    frame.styles = frame.styles or {}
     local m = {}
     if top ~= nil and left ~= nil and bottom ~= nil and right ~= nil then
         m.top, m.left, m.bottom, m.right = top, left, bottom, right
@@ -202,6 +203,37 @@ function WLVX:SetGap(frame, value)
     if not frame then return end
     frame.styles = frame.styles or {}
     frame.styles.gap = value or 0
+end
+
+--- Define el grosor de los bordes de forma individual para un frame.
+--- Si el valor es mayor a 0, el borde aparecerá con ese grosor.
+---@param parent table El objeto frame al que se le aplicarán los bordes.
+---@param top number|nil Grosor del borde superior.
+---@param left number|nil Grosor del borde izquierdo.
+---@param bottom number|nil Grosor del borde inferior.
+---@param right number|nil Grosor del borde derecho.
+---@param edgeSize number|nil Tamaño del borde.
+function WLVX:SetBorder(parent, top, left, bottom, right, edgeSize)
+    if not parent then return end
+    if top == nil then top = 0 end
+    if left == nil then left = 0 end
+    if bottom == nil then bottom = 0 end
+    if right == nil then right = 0 end
+    if edgeSize == nil then edgeSize = 0 end
+    parent.styles = parent.styles or {}
+    parent.styles.border = parent.styles.border or {}
+    parent.styles.border.top = top
+    parent.styles.border.left = left
+    parent.styles.border.bottom = bottom
+    parent.styles.border.right = right
+    parent.styles.border.edgeSize = edgeSize
+
+    parent:SetBackdrop({
+        bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+        edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+        edgeSize = edgeSize,
+        insets = { left = left, right = right, top = top, bottom = bottom },
+    })
 end
 
 print("|cff00ff00[WLV_Molecule]|r UIStyler cargado correctamente.")

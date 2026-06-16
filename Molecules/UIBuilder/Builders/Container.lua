@@ -5,8 +5,8 @@ local addonName, WLVX = ...
 ---@param containerId string ID único para el nuevo contenedor (servirá como frameId para otros elementos).
 function WLVX:AddContainer(parent, containerId, width, height, x, y)
     if not parent then return end
-
-    local res = WLVX:resolveDimensions(width or 100, height or 100, parent)
+    print(width)
+    print(height)
     local pW = parent:GetWidth() or 0
     local pH = parent:GetHeight() or 0
     local offX = x or 0
@@ -15,8 +15,8 @@ function WLVX:AddContainer(parent, containerId, width, height, x, y)
     local marginRight = (parent.styles and parent.styles.margin and parent.styles.margin.right) or 0
     local marginBottom = (parent.styles and parent.styles.margin and parent.styles.margin.bottom) or 0
 
-    local w = math.max(1, res.x)
-    local h = math.max(1, res.y)
+    local w = math.max(1, width)
+    local h = math.max(1, height)
 
     -- Prevenir desbordamiento horizontal considerando el margin del padre
     if pW > 0 and (offX + w) > (pW - marginRight) then
