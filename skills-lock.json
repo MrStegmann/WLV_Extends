@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "wow-lua-api": {
+      "source": "jburlison/wowaddonapiagents",
+      "sourceType": "github",
+      "skillPath": ".github/skills/wow-lua-api/SKILL.md",
+      "computedHash": "eb97e7183d9210312c42d767707618acd4d5889b87cbf1d3517efab01a0bad60"
+    }
+  }
+}
